@@ -25,6 +25,12 @@ public class UserGUI {
    
     private final JFrame mFrame;
     
+    private final Screen mRegistrationScreen = new Screen();
+    private final Screen mAutorizationScreen = new Screen();
+    private final Screen mMainScreen = new Screen();
+    
+    private final List<JComponent> mComponents = new ArrayList<>();
+    
     private final JLabel mUsernameLabel;
     private final JTextField mUsernameField;
     
@@ -57,7 +63,7 @@ public class UserGUI {
     private final JButton mCancelRegistrationButton;
     private final JButton mAcceptRegistrationButton;
     
-    private final List<JComponent> mComponents = new ArrayList<>();
+    private final JButton mLogOffButton;
     
     private final ClickListener mClickListener;
     
@@ -77,76 +83,80 @@ public class UserGUI {
         
         mUsernameLabel = new JLabel("Имя аккаунта");
         mUsernameLabel.setBounds(50, 20, 120, 20);
-        mComponents.add(mUsernameLabel);
+        mRegistrationScreen.add(mUsernameLabel);
+        mAutorizationScreen.add(mUsernameLabel);
         mUsernameField = new JTextField();
         mUsernameField.setBounds(200, 20, 100, 20);
-        mComponents.add(mUsernameField);
+        mRegistrationScreen.add(mUsernameField);
+        mAutorizationScreen.add(mUsernameField);
         
         mPasswordLabel = new JLabel("Пароль");
         mPasswordLabel.setBounds(50, 60, 120, 20);
-        mComponents.add(mPasswordLabel);
+        mRegistrationScreen.add(mPasswordLabel);
+        mAutorizationScreen.add(mPasswordLabel);
         mPasswordField = new JTextField();
         mPasswordField.setBounds(200, 60, 100, 20);
-        mComponents.add(mPasswordField);
+        mRegistrationScreen.add(mPasswordField);
+        mAutorizationScreen.add(mPasswordField);
         
         mEmailLabel = new JLabel("Электронная почта");
         mEmailLabel.setBounds(50, 100, 120, 20);
-        mComponents.add(mEmailLabel);
+        mRegistrationScreen.add(mEmailLabel);
         mEmailField = new JTextField();
         mEmailField.setBounds(200, 100, 100, 20);
-        mComponents.add(mEmailField);
+        mRegistrationScreen.add(mEmailField);
         
         mFullNameLabel = new JLabel("Полное имя");
         mFullNameLabel.setBounds(50, 140, 120, 20);
-        mComponents.add(mFullNameLabel);
+        mRegistrationScreen.add(mFullNameLabel);
         mFullNameField = new JTextField();
         mFullNameField.setBounds(200, 140, 100, 20);
-        mComponents.add(mFullNameField);
+        mRegistrationScreen.add(mFullNameField);
         
         mWorkLabel = new JLabel("Место учебы/работы");
         mWorkLabel.setBounds(50, 180, 120, 20);
-        mComponents.add(mWorkLabel);
+        mRegistrationScreen.add(mWorkLabel);
         mWorkField = new JTextField();
         mWorkField.setBounds(200, 180, 100, 20);
-        mComponents.add(mWorkField);
+        mRegistrationScreen.add(mWorkField);
         
         mBirthdayLabel = new JLabel("День рождения");
         mBirthdayLabel.setBounds(50, 220, 120, 20);
-        mComponents.add(mBirthdayLabel);
+        mRegistrationScreen.add(mBirthdayLabel);
         mBirthdayDayField = new JTextField();
         mBirthdayDayField.setBounds(200, 220, 30, 20);
-        mComponents.add(mBirthdayDayField);
+        mRegistrationScreen.add(mBirthdayDayField);
         mBirthdayMonthField = new JTextField();
         mBirthdayMonthField.setBounds(235, 220, 30, 20);
-        mComponents.add(mBirthdayMonthField);
+        mRegistrationScreen.add(mBirthdayMonthField);
         mBirthdayYearField = new JTextField();
         mBirthdayYearField.setBounds(270, 220, 30, 20);
-        mComponents.add(mBirthdayYearField);
+        mRegistrationScreen.add(mBirthdayYearField);
         
         mAcceptRegistrationButton = new JButton("Подтвердить");
         mAcceptRegistrationButton.setBounds(50, 600, 250, 30);
-        mComponents.add(mAcceptRegistrationButton);
+        mRegistrationScreen.add(mAcceptRegistrationButton);
         mAcceptRegistrationButton.addActionListener(mClickListener);
         
         mCancelRegistrationButton = new JButton("Отмена");
         mCancelRegistrationButton.setBounds(50, 640, 250, 30);
-        mComponents.add(mCancelRegistrationButton);
+        mRegistrationScreen.add(mCancelRegistrationButton);
         mCancelRegistrationButton.addActionListener(mClickListener);
         
         mLoginButton = new JButton("Вход");
         mLoginButton.setBounds(50, 100, 200, 30);
-        mComponents.add(mLoginButton);
+        mAutorizationScreen.add(mLoginButton);
         mLoginButton.addActionListener(mClickListener);
         
         mRegistrationButton = new JButton("Регистрация");
         mRegistrationButton.setBounds(50, 140, 200, 30);
-        mComponents.add(mRegistrationButton);
+        mAutorizationScreen.add(mRegistrationButton);
         mRegistrationButton.addActionListener(mClickListener);
          
         mInterests = mController.getInterestsTree();
         mInterestsLabel = new JLabel("Интересы:");
         mInterestsLabel.setBounds(50, 260, 120, 20);
-        mComponents.add(mInterestsLabel);
+        mRegistrationScreen.add(mInterestsLabel);
         mRootInterest = new DefaultMutableTreeNode("Интересы");
         final List<String> i = new ArrayList<>();
         final Map<String, DefaultMutableTreeNode> nodes = new HashMap<>();
@@ -171,74 +181,29 @@ public class UserGUI {
         
         mAddInterestButton = new JButton("Добавить");
         mAddInterestButton.setBounds(300, 285, 150, 30);
-        mComponents.add(mAddInterestButton);
+        mRegistrationScreen.add(mAddInterestButton);
         mAddInterestButton.addActionListener(mClickListener);
         
         mInterestTextArea = new JTextArea();
         mInterestTextArea.setBounds(300, 315, 150, 150);
-        mComponents.add(mInterestTextArea);
+        mRegistrationScreen.add(mInterestTextArea);
         
-        mComponents.add(mInterestsTree);
+        mRegistrationScreen.add(mInterestsTree);
+        
+        mLogOffButton = new JButton("Выход");
+        mLogOffButton.setBounds(50, 50, 150, 30);
+        mMainScreen.add(mLogOffButton);
+        mLogOffButton.addActionListener(mClickListener);
+        
+        mComponents.addAll(mAutorizationScreen.getComponents());
+        mComponents.addAll(mRegistrationScreen.getComponents());
+        mComponents.addAll(mMainScreen.getComponents());
     }
     
     public void show() {
         mFrame.setVisible(true);
-        showStartScreen();
+        mAutorizationScreen.show(mFrame);
     } 
-    
-    public void showStartScreen() {
-        clear();
-        mFrame.add(mUsernameLabel);
-        mFrame.add(mPasswordLabel);
-        mFrame.add(mUsernameField);
-        mFrame.add(mPasswordField);
-        mFrame.add(mRegistrationButton);
-        mFrame.add(mLoginButton);
-        mFrame.repaint();
-    }
-    
-    public void showAuthorizationScreen() {
-        clear();
-        //mFrame.add(mSignUpButton);
-        //mFrame.add(mShowStatusButton);
-        //mFrame.add(mLogoutButton);
-        mFrame.repaint();
-    }
-    
-    public void showRegistrationScreen() {
-        clear();
-        mFrame.add(mUsernameLabel);
-        mFrame.add(mUsernameField);
-        
-        mFrame.add(mPasswordLabel);
-        mFrame.add(mPasswordField);
-        
-        mFrame.add(mEmailLabel);
-        mFrame.add(mEmailField);
-        
-        mFrame.add(mFullNameLabel);
-        mFrame.add(mFullNameField);
-        
-        mFrame.add(mWorkLabel);
-        mFrame.add(mWorkField);
-        
-        mFrame.add(mBirthdayLabel);
-        mFrame.add(mBirthdayDayField);
-        mFrame.add(mBirthdayMonthField);
-        mFrame.add(mBirthdayYearField);
-        
-        mFrame.add(mInterestsLabel);
-        mFrame.add(mInterestsTree);
-        
-        mFrame.add(mAddInterestButton);
-        mFrame.add(mInterestTextArea);
-        
-        mFrame.add(mAcceptRegistrationButton);
-        
-        mFrame.add(mCancelRegistrationButton);
-        
-        mFrame.repaint();
-    }
     
     public void clear() {
         mComponents.stream().forEach((component) -> {
@@ -246,19 +211,19 @@ public class UserGUI {
         });
         mFrame.repaint();
     }
-    
+        
     public void clearTable(JTable table) {
         DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
     }
     
-    
     private class ClickListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == mRegistrationButton) {
-                showRegistrationScreen();
+                clear();
+                mRegistrationScreen.show(mFrame);
             } else if (e.getSource() == mLoginButton) {
                 if (!mUsernameField.getText().isEmpty()) {
                     if (mPasswordField.getText().length() >= 8) {
@@ -266,18 +231,19 @@ public class UserGUI {
                                 mPasswordField.getText())) {
                             mUserName = mUsernameField.getText();
                             JOptionPane.showMessageDialog(mFrame,
-                                "Authorization completed!");
-                            showAuthorizationScreen();
+                                "Вход выполнен!");
+                            clear();
+                            mMainScreen.show(mFrame);
                         } else {
                             JOptionPane.showMessageDialog(mFrame,
-                                "Authorization failed!");
+                                "Имя аккаунта или пароль не верен!");
                         }
                     } else {
                         JOptionPane.showMessageDialog(mFrame,
-                                "Password must have 8 symbols at least!");
+                                "Пароль должен иметь минимум 8 символов");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(mFrame, "Username is empty!");
+                    JOptionPane.showMessageDialog(mFrame, "Введите имя аккаунта");
                 }
             } else if (e.getSource() == mAddInterestButton) {
                 final Object selected = mInterestsTree.getLastSelectedPathComponent();
@@ -302,20 +268,24 @@ public class UserGUI {
                                 mFullNameField.getText(), mWorkField.getText(),
                                 birthday, interests)) {
                             JOptionPane.showMessageDialog(mFrame,
-                                "Registration completed!");
+                                "Регистрация завершена успешно!");
                         } else {
                             JOptionPane.showMessageDialog(mFrame,
-                                "Registration failed!");
+                                "Имя аккаунта уже занято!");
                         }
                     } else {
                         JOptionPane.showMessageDialog(mFrame,
-                                "Password must have 8 symbols at least!");
+                                "Пароль должен иметь минимум 8 символов");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(mFrame, "Username is empty!");
+                    JOptionPane.showMessageDialog(mFrame, "Введите имя аккаунта");
                 }
             } else if (e.getSource() == mCancelRegistrationButton) {
-                showStartScreen();
+                clear();
+                mAutorizationScreen.show(mFrame);
+            } else if (e.getSource() == mLogOffButton) {
+                clear();
+                mAutorizationScreen.show(mFrame);
             }
         }
     }
