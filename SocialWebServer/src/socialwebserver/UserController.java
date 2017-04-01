@@ -1,5 +1,6 @@
 package socialwebserver;
 
+import java.sql.Timestamp;
 import request.Request;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,15 @@ public class UserController  {
             }
             case Constants.GET_INTERESTS_TREE: {
                 sendInterestTree(socketConnection);
+                break;
+            }
+            case Constants.SEND_MAESSAGE: {
+                final Map<String, String> body = request.body;
+                final String from = body.get(Constants.FROM);
+                final String to = body.get(Constants.TO);
+                final String message = body.get(Constants.MESSAGE);
+                final String timestamp = (new Timestamp(System.currentTimeMillis())).toString();
+                sendMessage(from, to, message, timestamp, socketConnection);
                 break;
             }
             default:
@@ -93,8 +103,16 @@ public class UserController  {
         }
     }
 
-    public void sendMessage(String from, String to, String message, String time, SocketConnection socketConection) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void sendMessage(String from, String to, String message, String time, SocketConnection socketConnection) {
+        if (mDataAccess.sendMessage(from, to, message, time)) {
+            Request response = new Request();
+            response.senderType = Constants.SERVER;
+            response.requestType = Constants.SEND_MAESSAGE;
+            response.body.put(Constants.STATE, Constants.SUCCESS);
+            socketConnection.send(response);
+        } else {
+            sendFail(socketConnection);
+        }
     }
 
     public void getMessages(String firstUser, String secondUser, SocketConnection socketConection) {

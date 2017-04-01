@@ -65,5 +65,19 @@ public class Controller {
             }
         }
         return result;
-    } 
+    }
+    
+    public boolean sendMessage(final String from, final String to, final String message) {
+        Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.SEND_MAESSAGE;
+        request.body.put(Constants.FROM, from);
+        request.body.put(Constants.TO, to);
+        request.body.put(Constants.MESSAGE, message);
+        final Request response = mSocketConnection.sendAndGetResponse(request);
+
+        return response.senderType.equals(Constants.SERVER) &&
+                response.requestType.equals(Constants.SEND_MAESSAGE) &&
+                response.body.get(Constants.STATE).equals(Constants.SUCCESS);
+    }
 }

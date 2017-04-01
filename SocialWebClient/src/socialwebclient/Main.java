@@ -13,7 +13,7 @@ public class Main {
             final UserGUI userGUI = new UserGUI(controller);
             userGUI.show();
         } else {
-            JOptionPane.showMessageDialog(null, "Can't conect to the server!");
+            JOptionPane.showMessageDialog(null, "Сервер не доступен!");
         }
     }
 }

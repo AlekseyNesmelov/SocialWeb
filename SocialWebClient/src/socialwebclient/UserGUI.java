@@ -28,6 +28,7 @@ public class UserGUI {
     private final Screen mRegistrationScreen = new Screen();
     private final Screen mAutorizationScreen = new Screen();
     private final Screen mMainScreen = new Screen();
+    private final Screen mMessagesScreen = new Screen();
     
     private final List<JComponent> mComponents = new ArrayList<>();
     
@@ -51,6 +52,11 @@ public class UserGUI {
     private final JTextField mBirthdayMonthField;
     private final JTextField mBirthdayYearField;
     
+    private final JButton mSendMessageButton;
+    private final JLabel mMessageToLabel;
+    private final JTextField mMessageToField;
+    private final JTextArea mMessageToArea;
+    
     private final JLabel mInterestsLabel;
     private final JTree mInterestsTree;
     private final DefaultMutableTreeNode mRootInterest;
@@ -64,6 +70,9 @@ public class UserGUI {
     private final JButton mAcceptRegistrationButton;
     
     private final JButton mLogOffButton;
+    
+    private final JButton mMessagesButton;
+    private final JButton mBackFromMessagesButton;
     
     private final ClickListener mClickListener;
     
@@ -195,9 +204,37 @@ public class UserGUI {
         mMainScreen.add(mLogOffButton);
         mLogOffButton.addActionListener(mClickListener);
         
+        mMessagesButton = new JButton("Сообщения");
+        mMessagesButton.setBounds(50, 90, 150, 30);
+        mMainScreen.add(mMessagesButton);
+        mMessagesButton.addActionListener(mClickListener);
+        
+        mBackFromMessagesButton = new JButton("Назад");
+        mBackFromMessagesButton.setBounds(50, 50, 150, 30);
+        mMessagesScreen.add(mBackFromMessagesButton);
+        mBackFromMessagesButton.addActionListener(mClickListener);
+        
+        mMessageToLabel = new JLabel("Кому");
+        mMessageToLabel.setBounds(50, 100, 120, 20);
+        mMessagesScreen.add(mMessageToLabel);
+        mMessageToField = new JTextField();
+        mMessageToField.setBounds(200, 100, 100, 20);
+        mMessagesScreen.add(mMessageToField);
+        
+        mMessageToArea = new JTextArea();
+        mMessageToArea.setBounds(50, 140, 300, 100);
+        mMessageToArea.setLineWrap(true);
+        mMessagesScreen.add(mMessageToArea);
+        
+        mSendMessageButton = new JButton("Отправить");
+        mSendMessageButton.setBounds(50, 260, 300, 30);
+        mMessagesScreen.add(mSendMessageButton);
+        mSendMessageButton.addActionListener(mClickListener);
+        
         mComponents.addAll(mAutorizationScreen.getComponents());
         mComponents.addAll(mRegistrationScreen.getComponents());
         mComponents.addAll(mMainScreen.getComponents());
+        mComponents.addAll(mMessagesScreen.getComponents());
     }
     
     public void show() {
@@ -286,6 +323,21 @@ public class UserGUI {
             } else if (e.getSource() == mLogOffButton) {
                 clear();
                 mAutorizationScreen.show(mFrame);
+            } else if (e.getSource() == mMessagesButton) {
+                clear();
+                mMessagesScreen.show(mFrame);
+            } else if (e.getSource() == mBackFromMessagesButton) {
+                clear();
+                mMainScreen.show(mFrame);
+            } else if (e.getSource() == mSendMessageButton) {
+                if (mController.sendMessage(mUserName, mMessageToField.getText(),
+                        mMessageToArea.getText())) {
+                    JOptionPane.showMessageDialog(mFrame,
+                                "Сообщение отправлено успешно!");
+                } else {
+                    JOptionPane.showMessageDialog(mFrame,
+                                "Сообщение не отправлено!");
+                }
             }
         }
     }

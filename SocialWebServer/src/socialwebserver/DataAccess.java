@@ -114,8 +114,19 @@ public class DataAccess {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String sendMessage(String from, String to, String message, String time) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean sendMessage(String from, String to, String message, String time) {
+         synchronized (mLock) {
+            try {
+                final String query = "INSERT INTO public.\"UserMessages\" (\"from\", \"to\", \"message\", \"timestamp\") \n" +
+                   " VALUES ('" + from + "','" + to + "','" + message + "','" + time + "'" + ");";
+                final Statement statement = mConnection.createStatement();
+                statement.executeUpdate(query);
+                return true;
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+            return false;
+        }
     }
 
     public String getMessages(String firstUser, String secondUser) {
