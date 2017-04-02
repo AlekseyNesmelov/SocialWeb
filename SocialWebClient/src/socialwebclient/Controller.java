@@ -80,4 +80,26 @@ public class Controller {
                 response.requestType.equals(Constants.SEND_MAESSAGE) &&
                 response.body.get(Constants.STATE).equals(Constants.SUCCESS);
     }
+    
+    public String getMessages(final String from, final String to) {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.body.put(Constants.FROM, from);
+        request.body.put(Constants.TO, to);
+        request.requestType = Constants.GET_MESSAGES;
+        final Request response = mSocketConnection.sendAndGetResponse(request);
+        
+        final StringBuilder result = new StringBuilder();
+        if (response.body.get(Constants.MESSAGES) != null) {
+            final String[] messages = response.body.get(Constants.MESSAGES).split("<:::>");
+            for (final String message : messages) {
+                if (!message.isEmpty()) {
+                    final String[] splittedMessage = message.split("<:>");
+                    result.append(splittedMessage[2]).append(", Oт: ").append(splittedMessage[0]).
+                            append(" Кому: ").append(splittedMessage[1]).append("\n").append(splittedMessage[3]).append("\n");
+                }
+            }
+        }
+        return result.toString();
+    }
 }

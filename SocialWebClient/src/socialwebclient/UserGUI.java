@@ -56,6 +56,7 @@ public class UserGUI {
     private final JLabel mMessageToLabel;
     private final JTextField mMessageToField;
     private final JTextArea mMessageToArea;
+    private final JTextArea mMessageDialog;
     
     private final JLabel mInterestsLabel;
     private final JTree mInterestsTree;
@@ -73,6 +74,7 @@ public class UserGUI {
     
     private final JButton mMessagesButton;
     private final JButton mBackFromMessagesButton;
+    private final JButton mShowDialogButton;
     
     private final ClickListener mClickListener;
     
@@ -227,9 +229,19 @@ public class UserGUI {
         mMessagesScreen.add(mMessageToArea);
         
         mSendMessageButton = new JButton("Отправить");
-        mSendMessageButton.setBounds(50, 260, 300, 30);
+        mSendMessageButton.setBounds(50, 260, 140, 30);
         mMessagesScreen.add(mSendMessageButton);
         mSendMessageButton.addActionListener(mClickListener);
+        
+        mMessageDialog = new JTextArea();
+        mMessageDialog.setBounds(50, 340, 350, 200);
+        mMessageDialog.setLineWrap(true);
+        mMessagesScreen.add(mMessageDialog);
+        
+        mShowDialogButton = new JButton("Показать диалог");
+        mShowDialogButton.setBounds(210, 260, 140, 30);
+        mMessagesScreen.add(mShowDialogButton);
+        mShowDialogButton.addActionListener(mClickListener);
         
         mComponents.addAll(mAutorizationScreen.getComponents());
         mComponents.addAll(mRegistrationScreen.getComponents());
@@ -330,13 +342,27 @@ public class UserGUI {
                 clear();
                 mMainScreen.show(mFrame);
             } else if (e.getSource() == mSendMessageButton) {
-                if (mController.sendMessage(mUserName, mMessageToField.getText(),
-                        mMessageToArea.getText())) {
-                    JOptionPane.showMessageDialog(mFrame,
-                                "Сообщение отправлено успешно!");
+                if (mMessageToField.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(mFrame, "Введите имя получателя!");
                 } else {
-                    JOptionPane.showMessageDialog(mFrame,
-                                "Сообщение не отправлено!");
+                    if (mMessageToArea.getText().isEmpty()) {
+                        JOptionPane.showMessageDialog(mFrame, "Введите сообщение!");
+                    } else {
+                        if (mController.sendMessage(mUserName, mMessageToField.getText(),
+                                mMessageToArea.getText())) {
+                            JOptionPane.showMessageDialog(mFrame,
+                                        "Сообщение отправлено успешно!");
+                        } else {
+                            JOptionPane.showMessageDialog(mFrame,
+                                        "Сообщение не отправлено!");
+                        }
+                    }
+                }
+            } else if (e.getSource() == mShowDialogButton) {
+                if (mMessageToField.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(mFrame, "Введите имя получателя!");
+                } else {
+                    mMessageDialog.setText(mController.getMessages(mUserName, mMessageToField.getText()));
                 }
             }
         }

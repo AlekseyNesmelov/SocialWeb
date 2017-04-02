@@ -48,6 +48,13 @@ public class UserController  {
                 sendMessage(from, to, message, timestamp, socketConnection);
                 break;
             }
+            case Constants.GET_MESSAGES: {
+                final Map<String, String> body = request.body;
+                final String from = body.get(Constants.FROM);
+                final String to = body.get(Constants.TO);
+                getMessages(from, to, socketConnection);
+                break;
+            }
             default:
                 sendFail(socketConnection);
                 break;
@@ -115,8 +122,18 @@ public class UserController  {
         }
     }
 
-    public void getMessages(String firstUser, String secondUser, SocketConnection socketConection) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void getMessages(String firstUser, String secondUser, SocketConnection socketConnection) {
+        final StringBuilder sb = new StringBuilder();
+        final List<String> interests = mDataAccess.getMessages(firstUser, secondUser);
+        interests.stream().forEach((String interest) -> {
+            sb.append(interest).append("<:::>");
+        });
+        
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.GET_MESSAGES;
+        response.body.put(Constants.MESSAGES, sb.toString());
+        socketConnection.send(response);
     }
 
     public void createCommunity(String moderator, String communityName, String method, List<String> interests, SocketConnection socketConection) {

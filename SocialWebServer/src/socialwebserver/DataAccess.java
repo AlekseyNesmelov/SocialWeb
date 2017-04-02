@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataAccess {
@@ -129,8 +130,30 @@ public class DataAccess {
         }
     }
 
-    public String getMessages(String firstUser, String secondUser) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<String> getMessages(String firstUser, String secondUser) {
+        synchronized (mLock) {
+            final List<String> messages = new ArrayList<>();
+            try {
+                final String query = "select * from public.\"UserMessages\" where (\"from\"='" + firstUser +
+                        "' AND \"to\"='" + secondUser + "') OR (\"from\"='" + secondUser +
+                        "' AND \"to\"='" + firstUser + "') ORDER BY \"timestamp\";";
+                final Statement statement = mConnection.createStatement();
+                final ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    final StringBuilder sb = new StringBuilder();
+                    final String from = resultSet.getString(1);
+                    final String to = resultSet.getString(2);
+                    final String message = resultSet.getString(3);
+                    final String timestamp = resultSet.getString(4);
+                    sb.append(from).append("<:>").append(to).append("<:>").
+                            append(timestamp).append("<:>").append(message);
+                    messages.add(sb.toString());
+                }
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+            return messages;
+        }
     }
 
     public String createCommunity(String moderator, String communityName, String method, List<String> interests) {
