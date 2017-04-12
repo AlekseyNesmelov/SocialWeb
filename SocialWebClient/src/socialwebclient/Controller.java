@@ -1,6 +1,7 @@
 package socialwebclient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import request.Request;
 import java.util.List;
 
@@ -101,5 +102,30 @@ public class Controller {
             }
         }
         return result.toString();
+    }
+    
+    public String[] getCommunities() {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.GET_COMMUNITIES;
+        final Request response = mSocketConnection.sendAndGetResponse(request);
+        
+        if (response.body.get(Constants.COMMUNITIES) != null) {
+            return response.body.get(Constants.COMMUNITIES).split(";");
+        }
+        return new String[0];
+    }
+
+    public String[] getCommunity(String name){
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.GET_COMMUNITY;
+        request.body.put(Constants.COMMUNITY, name);
+        final Request response = mSocketConnection.sendAndGetResponse(request);
+        
+        if (response.body.get(Constants.COMMUNITY) != null) {
+            return response.body.get(Constants.COMMUNITY).split(";");
+        }
+        return new String[0];
     }
 }

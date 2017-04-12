@@ -9,30 +9,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataAccess {
+
     private static final String SERVER_IP = "localhost";
     private static final String SERVER_PORT = "5432";
     private static final String DATABASE = "social_web";
     private static final String USER = "postgres";
     private static final String PASSWORD = "123";
-    
+
     private static DataAccess instance_ = new DataAccess();
     private Connection mConnection;
     private final Object mLock = new Object();
+
     private DataAccess() {
     }
-    
+
     public static DataAccess getInstance() {
         return instance_;
     }
-    
-    public boolean connect () {
-        try{       
+
+    public boolean connect() {
+        try {
             Class.forName("org.postgresql.Driver");
             mConnection = DriverManager.getConnection(
-                "jdbc:postgresql://" + SERVER_IP + ":" + SERVER_PORT +
-                        "/" + DATABASE, USER, PASSWORD);
+                    "jdbc:postgresql://" + SERVER_IP + ":" + SERVER_PORT
+                    + "/" + DATABASE, USER, PASSWORD);
             return true;
-        }catch(ClassNotFoundException | SQLException e){
+        } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.toString());
         }
         return false;
@@ -56,13 +58,13 @@ public class DataAccess {
                 ResultSet resultSet = statement.executeQuery(query);
                 resultSet.next();
                 if (resultSet.getInt(1) == 0) {
-                    query = "INSERT INTO public.\"User\" (webname, password, email, fullname, work, birthday) \n" +
-                   " VALUES ('" + username + "','" + password + "','" + email + "','" + fullname
-                             + "','" + work + "','" + birthday + "'" + ");";
+                    query = "INSERT INTO public.\"User\" (webname, password, email, fullname, work, birthday) \n"
+                            + " VALUES ('" + username + "','" + password + "','" + email + "','" + fullname
+                            + "','" + work + "','" + birthday + "'" + ");";
                     statement.executeUpdate(query);
                     for (final String interest : interests) {
-                        query = "INSERT INTO public.\"UserInterests\" (\"user\", interest) \n" +
-                            " VALUES ('" + username + "','" + interest + "');";
+                        query = "INSERT INTO public.\"UserInterests\" (\"user\", interest) \n"
+                                + " VALUES ('" + username + "','" + interest + "');";
                         statement.executeUpdate(query);
                     }
                     return true;
@@ -73,7 +75,7 @@ public class DataAccess {
             return false;
         }
     }
-    
+
     public boolean checkUser(final String username, final String password) {
         synchronized (mLock) {
             try {
@@ -91,7 +93,7 @@ public class DataAccess {
             return false;
         }
     }
-    
+
     public String getInterestTree() {
         synchronized (mLock) {
             final StringBuilder sb = new StringBuilder();
@@ -116,10 +118,10 @@ public class DataAccess {
     }
 
     public boolean sendMessage(String from, String to, String message, String time) {
-         synchronized (mLock) {
+        synchronized (mLock) {
             try {
-                final String query = "INSERT INTO public.\"UserMessages\" (\"from\", \"to\", \"message\", \"timestamp\") \n" +
-                   " VALUES ('" + from + "','" + to + "','" + message + "','" + time + "'" + ");";
+                final String query = "INSERT INTO public.\"UserMessages\" (\"from\", \"to\", \"message\", \"timestamp\") \n"
+                        + " VALUES ('" + from + "','" + to + "','" + message + "','" + time + "'" + ");";
                 final Statement statement = mConnection.createStatement();
                 statement.executeUpdate(query);
                 return true;
@@ -134,9 +136,9 @@ public class DataAccess {
         synchronized (mLock) {
             final List<String> messages = new ArrayList<>();
             try {
-                final String query = "select * from public.\"UserMessages\" where (\"from\"='" + firstUser +
-                        "' AND \"to\"='" + secondUser + "') OR (\"from\"='" + secondUser +
-                        "' AND \"to\"='" + firstUser + "') ORDER BY \"timestamp\";";
+                final String query = "select * from public.\"UserMessages\" where (\"from\"='" + firstUser
+                        + "' AND \"to\"='" + secondUser + "') OR (\"from\"='" + secondUser
+                        + "' AND \"to\"='" + firstUser + "') ORDER BY \"timestamp\";";
                 final Statement statement = mConnection.createStatement();
                 final ResultSet resultSet = statement.executeQuery(query);
                 while (resultSet.next()) {
@@ -153,6 +155,49 @@ public class DataAccess {
                 System.out.println(e.toString());
             }
             return messages;
+        }
+    }
+
+    public String[] getCommunities() {
+        synchronized (mLock) {
+            final List<String> communities = new ArrayList<>();
+            try {
+                final String query = "select name from public.\"Community\";";
+                final Statement statement = mConnection.createStatement();
+                final ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    communities.add(resultSet.getString(1));
+                }
+                return (String[]) communities.toArray(new String[0]);
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+            return new String[0];
+        }
+    }
+
+    public String[] getCommunity(String name) {
+        synchronized (mLock) {
+            final List<String> result = new ArrayList<>();
+            try {
+                String query = "select * from public.\"Community\" where \"name\" = '" + name + "';";
+                final Statement statement = mConnection.createStatement();
+                ResultSet resultSet = statement.executeQuery(query);
+                if(!resultSet.next())
+                    return new String[0];
+                result.add(resultSet.getString(1));
+                result.add(resultSet.getString(2));
+                result.add(resultSet.getString(3));
+                System.out.println(resultSet.getString(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
+                query = "select interest from public.\"CommunityInterests\" where \"community\" = '" + name + "';";
+                resultSet = statement.executeQuery(query);
+                while(resultSet.next())
+                    result.add(resultSet.getString(1));
+                return (String[]) result.toArray(new String[0]);
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+            return new String[0];
         }
     }
 

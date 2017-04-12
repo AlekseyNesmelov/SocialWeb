@@ -10,12 +10,15 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -29,6 +32,9 @@ public class UserGUI {
     private final Screen mAutorizationScreen = new Screen();
     private final Screen mMainScreen = new Screen();
     private final Screen mMessagesScreen = new Screen();
+    private final Screen mCommunitiesScreen = new Screen();
+    private final Screen mCommunityCreateScreen = new Screen();
+    private final Screen mCommunitiesViewScreen = new Screen();
     
     private final List<JComponent> mComponents = new ArrayList<>();
     
@@ -76,7 +82,25 @@ public class UserGUI {
     private final JButton mBackFromMessagesButton;
     private final JButton mShowDialogButton;
     
+    private final JButton mCommunityButton;
+    private final JButton mCommunityCreateButton;
+    private final JButton mCommunitiesShow;
+    
+    private final JLabel mCommunityCreateNameLabel;
+    private final JTextField mCommunityCreateNameField;
+    private final JLabel mCommunityCreateModeratorLabel;
+    private final JTextField mCommunityCreateModeratorField;
+    private final JButton mCommunityCreateConfirmButton;
+    private final JButton mCommunityCreateCancelButton;
+    
+    private final JList<String> mCommunitiesList;
+    private final JLabel mCommunitiesNameLabel;
+    private final JTextField mCommunitiesNameField;
+    private final JLabel mCommunitiesModeratorLabel;
+    private final JTextField mCommunitiesModeratorField;
+    
     private final ClickListener mClickListener;
+    private final ListListener mListListener;
     
     private final Controller mController;
     
@@ -86,6 +110,7 @@ public class UserGUI {
     public UserGUI(final Controller controller) {
         mController = controller;
         mClickListener = new ClickListener();
+        mListListener = new ListListener();
 
         mFrame = new JFrame("Социальная сеть");
         mFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -243,10 +268,72 @@ public class UserGUI {
         mMessagesScreen.add(mShowDialogButton);
         mShowDialogButton.addActionListener(mClickListener);
         
+        mCommunityButton = new JButton("Сообщества");
+        mCommunityButton.setBounds(50, 130, 150, 30);
+        mMainScreen.add(mCommunityButton);
+        mCommunityButton.addActionListener(mClickListener);
+        
+        mCommunityCreateButton = new JButton("Создать сообщество");
+        mCommunityCreateButton.setBounds(50, 130, 150, 30);
+        mCommunitiesScreen.add(mCommunityCreateButton);
+        mCommunityCreateButton.addActionListener(mClickListener);
+        
+        mCommunityCreateNameLabel = new JLabel("Название");
+        mCommunityCreateNameLabel.setBounds(50, 20, 120, 20);
+        mCommunityCreateScreen.add(mCommunityCreateNameLabel);
+        mCommunityCreateNameField = new JTextField();
+        mCommunityCreateNameField.setBounds(200, 20, 100, 20);
+        mCommunityCreateScreen.add(mCommunityCreateNameField);
+        
+        mCommunityCreateModeratorLabel = new JLabel("Модератор");
+        mCommunityCreateModeratorLabel.setBounds(50, 50, 120, 20);
+        mCommunityCreateScreen.add(mCommunityCreateModeratorLabel);
+        mCommunityCreateModeratorField = new JTextField();
+        mCommunityCreateModeratorField.setBounds(200, 50, 100, 20);
+        mCommunityCreateScreen.add(mCommunityCreateModeratorField);
+        
+        mCommunityCreateConfirmButton = new JButton("OK");
+        mCommunityCreateConfirmButton.setBounds(50, 130, 150, 30);
+        mCommunityCreateScreen.add(mCommunityCreateConfirmButton);
+        mCommunityCreateConfirmButton.addActionListener(mClickListener);
+        
+        mCommunityCreateCancelButton = new JButton("Отмена");
+        mCommunityCreateCancelButton.setBounds(250, 130, 150, 30);
+        mCommunityCreateScreen.add(mCommunityCreateCancelButton);
+        mCommunityCreateCancelButton.addActionListener(mClickListener);
+        
+        mCommunitiesShow = new JButton("Найти сообщество");
+        mCommunitiesShow.setBounds(50, 90, 150, 30);
+        mCommunitiesScreen.add(mCommunitiesShow);
+        mCommunitiesShow.addActionListener(mClickListener);
+        
+        mCommunitiesList = new JList<>();
+        mCommunitiesList.setBounds(50, 50, 150, 200);
+        mCommunitiesViewScreen.add(mCommunitiesList);
+        mCommunitiesList.addListSelectionListener(mListListener);
+        
+        mCommunitiesNameLabel = new JLabel("Название");
+        mCommunitiesNameLabel.setBounds(250, 20, 120, 20);
+        mCommunitiesViewScreen.add(mCommunitiesNameLabel);
+        mCommunitiesNameField = new JTextField();
+        mCommunitiesNameField.setBounds(400, 20, 120, 20);
+        mCommunitiesNameField.setEnabled(false);
+        mCommunitiesViewScreen.add(mCommunitiesNameField);
+        
+        mCommunitiesModeratorLabel = new JLabel("Модератор");
+        mCommunitiesModeratorLabel.setBounds(250, 50, 120, 20);
+        mCommunitiesViewScreen.add(mCommunitiesModeratorLabel);
+        mCommunitiesModeratorField = new JTextField();
+        mCommunitiesModeratorField.setBounds(400, 50, 100, 20);
+        mCommunitiesViewScreen.add(mCommunitiesModeratorField);
+        
         mComponents.addAll(mAutorizationScreen.getComponents());
         mComponents.addAll(mRegistrationScreen.getComponents());
         mComponents.addAll(mMainScreen.getComponents());
         mComponents.addAll(mMessagesScreen.getComponents());
+        mComponents.addAll(mCommunitiesScreen.getComponents());
+        mComponents.addAll(mCommunityCreateScreen.getComponents());
+        mComponents.addAll(mCommunitiesViewScreen.getComponents());
     }
     
     public void show() {
@@ -364,6 +451,35 @@ public class UserGUI {
                 } else {
                     mMessageDialog.setText(mController.getMessages(mUserName, mMessageToField.getText()));
                 }
+            } else if (e.getSource() == mCommunityButton) {
+                clear();
+                mCommunitiesScreen.show(mFrame);
+            } else if (e.getSource() == mCommunityCreateButton) {
+                clear();
+                mCommunityCreateScreen.show(mFrame);
+            } else if (e.getSource() == mCommunityCreateCancelButton) {
+                clear();
+                mCommunitiesScreen.show(mFrame);
+            } else if (e.getSource() == mCommunitiesShow) {
+                clear();
+                mCommunitiesList.setListData(mController.getCommunities());
+                mCommunitiesViewScreen.show(mFrame);
+            }
+        }
+    }
+    
+    private class ListListener implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if (e.getSource() == mCommunitiesList) {
+                String[] communityInfo = mController.getCommunity(mCommunitiesList.getSelectedValue());
+                if(communityInfo.length == 0)
+                    return;
+                mCommunitiesNameField.setText(communityInfo[0]);
+                mCommunitiesModeratorField.setText(communityInfo[1]);
+                if(communityInfo[1].equals(mUserName))
+                    mCommunitiesModeratorField.setEnabled(true);
+                else mCommunitiesModeratorField.setEnabled(false);
             }
         }
     }

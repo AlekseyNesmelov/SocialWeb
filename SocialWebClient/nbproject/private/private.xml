@@ -3,8 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/SW_GIT/SocialWeb/SocialWebClient/src/socialwebclient/UserGUI.java</file>
-            <file>file:/C:/SW_GIT/SocialWeb/SocialWebClient/src/socialwebclient/Controller.java</file>
+            <file>file:/D:/github/SocialWeb/SocialWebClient/src/socialwebclient/Constants.java</file>
+            <file>file:/D:/github/SocialWeb/SocialWebClient/src/socialwebclient/Pair.java</file>
+            <file>file:/D:/github/SocialWeb/SocialWebClient/src/socialwebclient/Screen.java</file>
+            <file>file:/D:/github/SocialWeb/SocialWebClient/src/socialwebclient/Controller.java</file>
+            <file>file:/D:/github/SocialWeb/SocialWebClient/src/socialwebclient/SocketConnection.java</file>
+            <file>file:/D:/github/SocialWeb/SocialWebClient/src/socialwebclient/UserGUI.java</file>
         </group>
     </open-files>
 </project-private>

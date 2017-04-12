@@ -55,6 +55,16 @@ public class UserController  {
                 getMessages(from, to, socketConnection);
                 break;
             }
+            case Constants.GET_COMMUNITIES: {
+                getCommunities(socketConnection);
+                break;
+            }
+            case Constants.GET_COMMUNITY: {
+                final Map<String, String> body = request.body;
+                final String name = body.get(Constants.COMMUNITY);
+                getCommunity(name, socketConnection);
+                break;
+            }
             default:
                 sendFail(socketConnection);
                 break;
@@ -133,6 +143,22 @@ public class UserController  {
         response.senderType = Constants.SERVER;
         response.requestType = Constants.GET_MESSAGES;
         response.body.put(Constants.MESSAGES, sb.toString());
+        socketConnection.send(response);
+    }
+
+    public void getCommunities(SocketConnection socketConnection) {
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.GET_COMMUNITIES;
+        response.body.put(Constants.COMMUNITIES, String.join(";", mDataAccess.getCommunities()));
+        socketConnection.send(response);
+    }
+
+    public void getCommunity(String name, SocketConnection socketConnection) {
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.GET_COMMUNITY;
+        response.body.put(Constants.COMMUNITY, String.join(";", mDataAccess.getCommunity(name)));
         socketConnection.send(response);
     }
 

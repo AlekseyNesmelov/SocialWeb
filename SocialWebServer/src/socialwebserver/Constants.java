@@ -11,6 +11,8 @@ public class Constants {
     public static final String GET_INTERESTS_TREE = "get interests tree";
     public static final String SEND_MAESSAGE = "send message";
     public static final String GET_MESSAGES = "get messages";
+    public static final String GET_COMMUNITIES = "get communities";
+    public static final String GET_COMMUNITY = "get community";
     
     public static final String STATE = "state";
     public static final String FAIL = "fail";
@@ -28,4 +30,6 @@ public class Constants {
     public static final String TO = "to";
     public static final String MESSAGE = "message";
     public static final String MESSAGES = "messages";
+    public static final String COMMUNITIES = "communities";
+    public static final String COMMUNITY = "community";
 }
