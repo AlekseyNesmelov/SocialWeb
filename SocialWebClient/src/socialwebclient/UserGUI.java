@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -63,6 +64,7 @@ public class UserGUI {
     private final JTextField mMessageToField;
     private final JTextArea mMessageToArea;
     private final JTextArea mMessageDialog;
+    private final JScrollPane mMessageDialogScroll;
     
     private final JLabel mInterestsLabel;
     private final JTree mInterestsTree;
@@ -106,6 +108,8 @@ public class UserGUI {
     
     private String mUserName = null;
     private List<Pair> mInterests;
+    
+    private RefreshDialogThread mRefreshDialogThread = null;
     
     public UserGUI(final Controller controller) {
         mController = controller;
@@ -259,9 +263,13 @@ public class UserGUI {
         mSendMessageButton.addActionListener(mClickListener);
         
         mMessageDialog = new JTextArea();
-        mMessageDialog.setBounds(50, 340, 350, 200);
         mMessageDialog.setLineWrap(true);
-        mMessagesScreen.add(mMessageDialog);
+        
+        mMessageDialogScroll = new JScrollPane (mMessageDialog, 
+   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mMessageDialogScroll.setBounds(50, 340, 350, 200);
+        
+        mMessagesScreen.add(mMessageDialogScroll);
         
         mShowDialogButton = new JButton("Показать диалог");
         mShowDialogButton.setBounds(210, 260, 140, 30);
@@ -425,9 +433,17 @@ public class UserGUI {
             } else if (e.getSource() == mMessagesButton) {
                 clear();
                 mMessagesScreen.show(mFrame);
+                if (mRefreshDialogThread != null) {
+                    mRefreshDialogThread.breakRefresh();
+                }
+                mRefreshDialogThread = new RefreshDialogThread(mUserName, mMessageDialog, mController);
+                mRefreshDialogThread.start();
             } else if (e.getSource() == mBackFromMessagesButton) {
                 clear();
                 mMainScreen.show(mFrame);
+                if (mRefreshDialogThread != null) {
+                    mRefreshDialogThread.breakRefresh();
+                }
             } else if (e.getSource() == mSendMessageButton) {
                 if (mMessageToField.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(mFrame, "Введите имя получателя!");
@@ -450,7 +466,10 @@ public class UserGUI {
                     JOptionPane.showMessageDialog(mFrame, "Введите имя получателя!");
                 } else {
                     mMessageDialog.setText(mController.getMessages(mUserName, mMessageToField.getText()));
-                }
+                    if (mRefreshDialogThread != null) {
+                        mRefreshDialogThread.setSecond(mMessageToField.getText());
+                    }
+                }           
             } else if (e.getSource() == mCommunityButton) {
                 clear();
                 mCommunitiesScreen.show(mFrame);
