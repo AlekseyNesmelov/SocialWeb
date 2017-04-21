@@ -157,6 +157,37 @@ public class DataAccess {
             return messages;
         }
     }
+    
+    public List<String> getDialogs(String firstUser) {
+        synchronized (mLock) {
+            final List<String> dialogs = new ArrayList<>();
+            try {
+                String query = "select public.\"UserMessages\".\"to\" from public.\"UserMessages\" where \"from\"='" + firstUser + "';";
+                Statement statement = mConnection.createStatement();
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    final String to = resultSet.getString(1);
+                    if (!dialogs.contains(to)) {
+                        dialogs.add(to);
+                    }
+                }
+                
+                
+                query = "select public.\"UserMessages\".\"from\" from public.\"UserMessages\" where \"to\"='" + firstUser + "';";
+                statement = mConnection.createStatement();
+                resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    final String from = resultSet.getString(1);
+                    if (!dialogs.contains(from)) {
+                        dialogs.add(from);
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println(e.toString());
+            }
+            return dialogs;
+        }
+    }
 
     public String[] getCommunities() {
         synchronized (mLock) {
