@@ -101,6 +101,7 @@ public class UserController  {
                 final String community = body.get(Constants.COMMUNITY_NAME);
                 final String user = body.get(Constants.WEBNAME);
                 quitTheCommunity(community, user, socketConnection);
+            }
             case Constants.GET_DIALOGS: {
                 final Map<String, String> body = request.body;
                 final String from = body.get(Constants.FROM);
