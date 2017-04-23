@@ -3,15 +3,18 @@ package socialwebclient;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -33,7 +36,6 @@ public class UserGUI {
     private final Screen mAutorizationScreen = new Screen();
     private final Screen mMainScreen = new Screen();
     private final Screen mMessagesScreen = new Screen();
-    private final Screen mCommunitiesScreen = new Screen();
     private final Screen mCommunityCreateScreen = new Screen();
     private final Screen mCommunitiesViewScreen = new Screen();
     
@@ -84,22 +86,31 @@ public class UserGUI {
     private final JButton mBackFromMessagesButton;
     private final JButton mShowDialogButton;
     
-    private final JButton mCommunityButton;
     private final JButton mCommunityCreateButton;
     private final JButton mCommunitiesShow;
     
-    private final JLabel mCommunityCreateNameLabel;
-    private final JTextField mCommunityCreateNameField;
-    private final JLabel mCommunityCreateModeratorLabel;
-    private final JTextField mCommunityCreateModeratorField;
+    private final JLabel mCommunityNameLabel;
+    private final JTextField mCommunityNameField;
+    private final JLabel mCommunityModeratorLabel;
+    private final JTextField mCommunityModeratorField;
+    private final ButtonGroup mCommunityMethod;
+    private final JRadioButton freeRB;
+    private final JRadioButton restrictedRB;
     private final JButton mCommunityCreateConfirmButton;
     private final JButton mCommunityCreateCancelButton;
-    
+    private final JButton mCommunityEditButton;
+    private final JTree mCommunityInterestsTree;
+    private final JButton mCommunityAddInterestButton;
+    private final JButton mCommunityDeleteInterestButton;
+    private final JTextArea mCommunityInterestTextArea;
     private final JList<String> mCommunitiesList;
-    private final JLabel mCommunitiesNameLabel;
-    private final JTextField mCommunitiesNameField;
-    private final JLabel mCommunitiesModeratorLabel;
-    private final JTextField mCommunitiesModeratorField;
+    private final JTextArea mCommunityMembers;
+    private final JButton mCommunityJoinButton;
+    private final JButton mCommunityQuitButton;
+    private final JTextField mCommunityInviteField;
+    private final JButton mCommunityInviteButton;
+    
+    private final JButton mMainButton;
     
     private final ClickListener mClickListener;
     private final ListListener mListListener;
@@ -197,7 +208,7 @@ public class UserGUI {
         mInterestsLabel = new JLabel("Интересы:");
         mInterestsLabel.setBounds(50, 260, 120, 20);
         mRegistrationScreen.add(mInterestsLabel);
-        mRootInterest = new DefaultMutableTreeNode("Интересы");
+        mRootInterest = new DefaultMutableTreeNode();
         final List<String> i = new ArrayList<>();
         final Map<String, DefaultMutableTreeNode> nodes = new HashMap<>();
         while (i.size() != mInterests.size()) {
@@ -226,17 +237,18 @@ public class UserGUI {
         
         mInterestTextArea = new JTextArea();
         mInterestTextArea.setBounds(300, 315, 150, 150);
+        mInterestTextArea.setEditable(false);
         mRegistrationScreen.add(mInterestTextArea);
         
         mRegistrationScreen.add(mInterestsTree);
         
         mLogOffButton = new JButton("Выход");
-        mLogOffButton.setBounds(50, 50, 150, 30);
+        mLogOffButton.setBounds(200, 100, 200, 50);
         mMainScreen.add(mLogOffButton);
         mLogOffButton.addActionListener(mClickListener);
         
         mMessagesButton = new JButton("Сообщения");
-        mMessagesButton.setBounds(50, 90, 150, 30);
+        mMessagesButton.setBounds(200, 170, 200, 50);
         mMainScreen.add(mMessagesButton);
         mMessagesButton.addActionListener(mClickListener);
         
@@ -276,70 +288,129 @@ public class UserGUI {
         mMessagesScreen.add(mShowDialogButton);
         mShowDialogButton.addActionListener(mClickListener);
         
-        mCommunityButton = new JButton("Сообщества");
-        mCommunityButton.setBounds(50, 130, 150, 30);
-        mMainScreen.add(mCommunityButton);
-        mCommunityButton.addActionListener(mClickListener);
-        
         mCommunityCreateButton = new JButton("Создать сообщество");
-        mCommunityCreateButton.setBounds(50, 130, 150, 30);
-        mCommunitiesScreen.add(mCommunityCreateButton);
+        mCommunityCreateButton.setBounds(200, 240, 200, 50);
+        mMainScreen.add(mCommunityCreateButton);
         mCommunityCreateButton.addActionListener(mClickListener);
         
-        mCommunityCreateNameLabel = new JLabel("Название");
-        mCommunityCreateNameLabel.setBounds(50, 20, 120, 20);
-        mCommunityCreateScreen.add(mCommunityCreateNameLabel);
-        mCommunityCreateNameField = new JTextField();
-        mCommunityCreateNameField.setBounds(200, 20, 100, 20);
-        mCommunityCreateScreen.add(mCommunityCreateNameField);
+        mCommunityNameLabel = new JLabel("Название");
+        mCommunityNameLabel.setBounds(50, 20, 120, 20);
+        mCommunityCreateScreen.add(mCommunityNameLabel);
+        mCommunitiesViewScreen.add(mCommunityNameLabel);
+        mCommunityNameField = new JTextField();
+        mCommunityNameField.setBounds(200, 20, 100, 20);
+        mCommunityCreateScreen.add(mCommunityNameField);
+        mCommunitiesViewScreen.add(mCommunityNameField);
         
-        mCommunityCreateModeratorLabel = new JLabel("Модератор");
-        mCommunityCreateModeratorLabel.setBounds(50, 50, 120, 20);
-        mCommunityCreateScreen.add(mCommunityCreateModeratorLabel);
-        mCommunityCreateModeratorField = new JTextField();
-        mCommunityCreateModeratorField.setBounds(200, 50, 100, 20);
-        mCommunityCreateScreen.add(mCommunityCreateModeratorField);
+        mCommunityModeratorLabel = new JLabel("Модератор");
+        mCommunityModeratorLabel.setBounds(50, 50, 120, 20);
+        mCommunityCreateScreen.add(mCommunityModeratorLabel);
+        mCommunitiesViewScreen.add(mCommunityModeratorLabel);
+        mCommunityModeratorField = new JTextField();
+        mCommunityModeratorField.setBounds(200, 50, 100, 20);
+        mCommunityCreateScreen.add(mCommunityModeratorField);
+        mCommunitiesViewScreen.add(mCommunityModeratorField);
+        
+        mCommunityMethod = new ButtonGroup();
+        freeRB = new JRadioButton("Открытое");
+        freeRB.setBounds(50, 80, 100, 20);
+        freeRB.setSelected(true);
+        restrictedRB = new JRadioButton("Закрытое");
+        restrictedRB.setBounds(170, 80, 100, 20);
+        mCommunityMethod.add(freeRB);
+        mCommunityMethod.add(restrictedRB);
+        mCommunityCreateScreen.add(freeRB);
+        mCommunityCreateScreen.add(restrictedRB);
+        mCommunitiesViewScreen.add(freeRB);
+        mCommunitiesViewScreen.add(restrictedRB);
+        
+        mCommunityInterestsTree = new JTree(mRootInterest);
+        mCommunityInterestsTree.setBounds(50, 150, 200, 300);
+        mCommunityCreateScreen.add(mCommunityInterestsTree);
+        mCommunitiesViewScreen.add(mCommunityInterestsTree);
+        
+        mCommunityAddInterestButton = new JButton("Добавить");
+        mCommunityAddInterestButton.setBounds(260, 150, 120, 30);
+        mCommunityCreateScreen.add(mCommunityAddInterestButton);
+        mCommunitiesViewScreen.add(mCommunityAddInterestButton);
+        mCommunityAddInterestButton.addActionListener(mClickListener);
+        
+        mCommunityDeleteInterestButton = new JButton("Удалить");
+        mCommunityDeleteInterestButton.setBounds(260, 190, 120, 30);
+        mCommunityCreateScreen.add(mCommunityDeleteInterestButton);
+        mCommunitiesViewScreen.add(mCommunityDeleteInterestButton);
+        mCommunityDeleteInterestButton.addActionListener(mClickListener);
+        
+        mCommunityInterestTextArea = new JTextArea();
+        mCommunityInterestTextArea.setBounds(260, 230, 120, 220);
+        mCommunityInterestTextArea.setEditable(false);
+        mCommunityCreateScreen.add(mCommunityInterestTextArea);
+        mCommunitiesViewScreen.add(mCommunityInterestTextArea);
         
         mCommunityCreateConfirmButton = new JButton("OK");
-        mCommunityCreateConfirmButton.setBounds(50, 130, 150, 30);
+        mCommunityCreateConfirmButton.setBounds(50, 480, 150, 30);
         mCommunityCreateScreen.add(mCommunityCreateConfirmButton);
         mCommunityCreateConfirmButton.addActionListener(mClickListener);
         
         mCommunityCreateCancelButton = new JButton("Отмена");
-        mCommunityCreateCancelButton.setBounds(250, 130, 150, 30);
+        mCommunityCreateCancelButton.setBounds(250, 480, 150, 30);
         mCommunityCreateScreen.add(mCommunityCreateCancelButton);
         mCommunityCreateCancelButton.addActionListener(mClickListener);
         
         mCommunitiesShow = new JButton("Найти сообщество");
-        mCommunitiesShow.setBounds(50, 90, 150, 30);
-        mCommunitiesScreen.add(mCommunitiesShow);
+        mCommunitiesShow.setBounds(200, 310, 200, 50);
+        mMainScreen.add(mCommunitiesShow);
         mCommunitiesShow.addActionListener(mClickListener);
         
+        mCommunityEditButton = new JButton("Редактировать");
+        mCommunityEditButton.setBounds(50, 480, 150, 30);
+        mCommunitiesViewScreen.add(mCommunityEditButton);
+        mCommunityEditButton.addActionListener(mClickListener);
+        
         mCommunitiesList = new JList<>();
-        mCommunitiesList.setBounds(50, 50, 150, 200);
+        mCommunitiesList.setBounds(400, 50, 175, 200);
         mCommunitiesViewScreen.add(mCommunitiesList);
         mCommunitiesList.addListSelectionListener(mListListener);
         
-        mCommunitiesNameLabel = new JLabel("Название");
-        mCommunitiesNameLabel.setBounds(250, 20, 120, 20);
-        mCommunitiesViewScreen.add(mCommunitiesNameLabel);
-        mCommunitiesNameField = new JTextField();
-        mCommunitiesNameField.setBounds(400, 20, 120, 20);
-        mCommunitiesNameField.setEnabled(false);
-        mCommunitiesViewScreen.add(mCommunitiesNameField);
+        mCommunityMembers = new JTextArea();
+        mCommunityMembers.setBounds(50, 550, 500, 75);
+        mCommunityMembers.setEditable(false);
+        mCommunitiesViewScreen.add(mCommunityMembers);
         
-        mCommunitiesModeratorLabel = new JLabel("Модератор");
-        mCommunitiesModeratorLabel.setBounds(250, 50, 120, 20);
-        mCommunitiesViewScreen.add(mCommunitiesModeratorLabel);
-        mCommunitiesModeratorField = new JTextField();
-        mCommunitiesModeratorField.setBounds(400, 50, 100, 20);
-        mCommunitiesViewScreen.add(mCommunitiesModeratorField);
+        mCommunityJoinButton = new JButton("Вступить в сообщество");
+        mCommunityJoinButton.setBounds(400, 270, 175, 90);
+        mCommunityJoinButton.setEnabled(false);
+        mCommunitiesViewScreen.add(mCommunityJoinButton);
+        mCommunityJoinButton.addActionListener(mClickListener);
+        
+        mCommunityQuitButton = new JButton("Выйти из сообщества");
+        mCommunityQuitButton.setBounds(400, 370, 175, 90);
+        mCommunityQuitButton.setEnabled(false);
+        mCommunitiesViewScreen.add(mCommunityQuitButton);
+        mCommunityQuitButton.addActionListener(mClickListener);
+        
+        mCommunityInviteField = new JTextField();
+        mCommunityInviteField.setBounds(250, 480, 150, 20);
+        mCommunityInviteField.setEnabled(false);
+        mCommunitiesViewScreen.add(mCommunityInviteField);
+        
+        mCommunityInviteButton = new JButton("Пригласить");
+        mCommunityInviteButton.setBounds(250, 510, 150, 30);
+        mCommunityInviteButton.setEnabled(false);
+        mCommunitiesViewScreen.add(mCommunityInviteButton);
+        mCommunityInviteButton.addActionListener(mClickListener);
+        
+        mMainButton = new JButton("Главная страница");
+        mMainButton.setBounds(10, HEIGHT - 70, WIDTH - 30, 30);
+        mMessagesScreen.add(mMainButton);
+        mCommunityCreateScreen.add(mMainButton);
+        mCommunitiesViewScreen.add(mMainButton);
+        mMainButton.addActionListener(mClickListener);
         
         mComponents.addAll(mAutorizationScreen.getComponents());
         mComponents.addAll(mRegistrationScreen.getComponents());
         mComponents.addAll(mMainScreen.getComponents());
         mComponents.addAll(mMessagesScreen.getComponents());
-        mComponents.addAll(mCommunitiesScreen.getComponents());
         mComponents.addAll(mCommunityCreateScreen.getComponents());
         mComponents.addAll(mCommunitiesViewScreen.getComponents());
     }
@@ -470,19 +541,106 @@ public class UserGUI {
                         mRefreshDialogThread.setSecond(mMessageToField.getText());
                     }
                 }           
-            } else if (e.getSource() == mCommunityButton) {
+            } else if (e.getSource() == mMainButton) {
                 clear();
-                mCommunitiesScreen.show(mFrame);
+                mMainScreen.show(mFrame);
             } else if (e.getSource() == mCommunityCreateButton) {
+                mCommunityNameField.setText("");
+                mCommunityModeratorField.setText(mUserName);
+                freeRB.setSelected(true);
+                restrictedRB.setSelected(false);
+                mCommunityNameField.setEnabled(true);
+                mCommunityModeratorField.setEnabled(false);
+                freeRB.setEnabled(true);
+                restrictedRB.setEnabled(true);
+                mCommunityAddInterestButton.setEnabled(true);
+                mCommunityDeleteInterestButton.setEnabled(true);
+                mCommunityInterestTextArea.setText("");
                 clear();
                 mCommunityCreateScreen.show(mFrame);
+            } else if (e.getSource() == mCommunityAddInterestButton) {
+                final Object selected = mCommunityInterestsTree.getLastSelectedPathComponent();
+                if (selected != null && !mCommunityInterestTextArea.getText().contains(selected.toString())) {
+                    mCommunityInterestTextArea.setText(mCommunityInterestTextArea.getText().isEmpty() ?
+                            selected.toString() :
+                            mCommunityInterestTextArea.getText() + "\n" + selected.toString());
+                }
+            } else if (e.getSource() == mCommunityDeleteInterestButton) {
+                final Object selected = mCommunityInterestsTree.getLastSelectedPathComponent();
+                String text = mCommunityInterestTextArea.getText();
+                if (selected != null && text.contains(selected.toString())) {
+                    if(text.equals(selected.toString())) text = "";
+                    else if(text.endsWith(selected.toString())) text = text.replaceFirst("\n" + selected.toString(), "");
+                    else text = text.replaceFirst(selected.toString() + "\n", "");
+                    mCommunityInterestTextArea.setText(text);
+                }
+            } else if (e.getSource() == mCommunityCreateConfirmButton) {
+                boolean result = mController.createCommunity(mCommunityNameField.getText(),
+                        mCommunityModeratorField.getText(),
+                        freeRB.isSelected() ? Constants.FREE_METHOD : Constants.RESTRICTED_METHOD,
+                        Arrays.asList(mCommunityInterestTextArea.getText().split("\n")));
+                if (result) {
+                    clear();
+                    mMainScreen.show(mFrame);
+                    JOptionPane.showMessageDialog(mFrame, "Успешно");
+                }
+                else JOptionPane.showMessageDialog(mFrame, "Ошибка при создании сообщества");
             } else if (e.getSource() == mCommunityCreateCancelButton) {
                 clear();
-                mCommunitiesScreen.show(mFrame);
+                mMainScreen.show(mFrame);
             } else if (e.getSource() == mCommunitiesShow) {
                 clear();
+                mCommunityNameField.setText("");
+                mCommunityModeratorField.setText("");
+                freeRB.setSelected(true);
+                restrictedRB.setSelected(false);
+                mCommunityNameField.setEnabled(false);
+                mCommunityModeratorField.setEnabled(false);
+                freeRB.setEnabled(false);
+                restrictedRB.setEnabled(false);
+                mCommunityAddInterestButton.setEnabled(false);
+                mCommunityDeleteInterestButton.setEnabled(false);
+                mCommunityEditButton.setEnabled(false);
+                mCommunityInviteField.setEnabled(false);
+                mCommunityInviteButton.setEnabled(false);
                 mCommunitiesList.setListData(mController.getCommunities());
+                mCommunitiesList.setSelectedIndex(-1);
+                mCommunityInterestTextArea.setText("");
                 mCommunitiesViewScreen.show(mFrame);
+            } else if (e.getSource() == mCommunityEditButton) {
+                boolean result = mController.editCommunity(mCommunityNameField.getText(),
+                        freeRB.isSelected() ? Constants.FREE_METHOD : Constants.RESTRICTED_METHOD,
+                        Arrays.asList(mCommunityInterestTextArea.getText().split("\n")));
+                if (result) {
+                    JOptionPane.showMessageDialog(mFrame, "Успешно");
+                }
+                else JOptionPane.showMessageDialog(mFrame, "Ошибка при редактировании сообщества");
+            } else if (e.getSource() == mCommunityJoinButton) {
+                if (mController.joinTheCommunity(mCommunityNameField.getText(), mUserName)) {
+                    mCommunityMembers.setText("Участники : " + String.join(", ", mController.getCommunityMembers(mCommunityNameField.getText())));
+                }
+                else JOptionPane.showMessageDialog(mFrame, "Вы уже тут");
+            } else if (e.getSource() == mCommunityQuitButton) {
+                String result = mController.quitTheCommunity(mCommunityNameField.getText(), mUserName);
+                switch (result) {
+                    case Constants.SUCCESS:
+                        mCommunityMembers.setText("Участники : " + String.join(", ", mController.getCommunityMembers(mCommunityNameField.getText())));
+                        break;
+                    case Constants.YOU_ARE_A_MODERATOR:
+                        JOptionPane.showMessageDialog(mFrame, "Вы модератор");
+                        break;
+                    case Constants.NOT_IN_COMMUNITY:
+                        JOptionPane.showMessageDialog(mFrame, "Вам не надо выходить из сообщества, если вы не вступали в него");
+                        break;
+                    case Constants.FAIL:
+                        JOptionPane.showMessageDialog(mFrame, "Что-то пошло не так");
+                        break;
+                }
+            } else if (e.getSource() == mCommunityInviteButton) {
+                if (mController.joinTheCommunity(mCommunityNameField.getText(), mCommunityInviteField.getText())) {
+                    mCommunityMembers.setText("Участники : " + String.join(", ", mController.getCommunityMembers(mCommunityNameField.getText())));
+                }
+                else JOptionPane.showMessageDialog(mFrame, "Ошибка");
             }
         }
     }
@@ -491,14 +649,57 @@ public class UserGUI {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             if (e.getSource() == mCommunitiesList) {
+                if(mCommunitiesList.getSelectedIndex() >= mCommunitiesList.getModel().getSize()) {
+                    mCommunitiesList.setSelectedIndex(-1);
+                    return;
+                }
+                if(mCommunitiesList.getSelectedIndex() == -1)
+                    return;
                 String[] communityInfo = mController.getCommunity(mCommunitiesList.getSelectedValue());
                 if(communityInfo.length == 0)
                     return;
-                mCommunitiesNameField.setText(communityInfo[0]);
-                mCommunitiesModeratorField.setText(communityInfo[1]);
-                if(communityInfo[1].equals(mUserName))
-                    mCommunitiesModeratorField.setEnabled(true);
-                else mCommunitiesModeratorField.setEnabled(false);
+                String[] communityMembers = mController.getCommunityMembers(communityInfo[0]);
+                mCommunityNameField.setText(communityInfo[0]);
+                mCommunityNameField.setEnabled(false);
+                mCommunityModeratorField.setText(communityInfo[1]);
+                mCommunityModeratorField.setEnabled(false);
+                mCommunityMembers.setText("Участники : " + String.join(", ", communityMembers));
+                if(communityInfo[2].equals(Constants.FREE_METHOD)) {
+                    freeRB.setSelected(true);
+                    restrictedRB.setSelected(false);
+                }
+                else {
+                    freeRB.setSelected(false);
+                    restrictedRB.setSelected(true);
+                }
+                if(communityInfo.length > 2)
+                    mCommunityInterestTextArea.setText(String.join("\n", Arrays.copyOfRange(communityInfo, 3, communityInfo.length)));
+                else mCommunityInterestTextArea.setText("");
+                if(communityInfo[1].equals(mUserName)) {
+                    freeRB.setEnabled(true);
+                    restrictedRB.setEnabled(true);
+                    mCommunityAddInterestButton.setEnabled(true);
+                    mCommunityDeleteInterestButton.setEnabled(true);
+                    mCommunityEditButton.setEnabled(true);
+                    mCommunityInviteField.setEnabled(true);
+                    mCommunityInviteButton.setEnabled(true);
+                }
+                else {
+                    freeRB.setEnabled(false);
+                    restrictedRB.setEnabled(false);
+                    mCommunityAddInterestButton.setEnabled(false);
+                    mCommunityDeleteInterestButton.setEnabled(false);
+                    mCommunityEditButton.setEnabled(false);
+                    mCommunityInviteField.setEnabled(false);
+                    mCommunityInviteButton.setEnabled(false);
+                }
+                if(communityInfo[2].equals(Constants.FREE_METHOD)) {
+                    mCommunityJoinButton.setEnabled(true);
+                }
+                else {
+                    mCommunityJoinButton.setEnabled(false);
+                }
+                    mCommunityQuitButton.setEnabled(true);
             }
         }
     }

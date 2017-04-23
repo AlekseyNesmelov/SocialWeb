@@ -116,7 +116,7 @@ public class Controller {
         return new String[0];
     }
 
-    public String[] getCommunity(String name){
+    public String[] getCommunity(String name) {
         final Request request = new Request();
         request.senderType = Constants.USER;
         request.requestType = Constants.GET_COMMUNITY;
@@ -127,5 +127,65 @@ public class Controller {
             return response.body.get(Constants.COMMUNITY).split(";");
         }
         return new String[0];
+    }
+    
+    public boolean createCommunity(String name, String moderator, String method, List<String> interests) {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.CREATE_COMMUNITY;
+        request.body.put(Constants.COMMUNITY_NAME, name);
+        request.body.put(Constants.COMMUNITY_MODERATOR, moderator);
+        request.body.put(Constants.COMMUNITY_METHOD, method);
+        String interestsString = "";
+        interestsString = interests.stream().map((interest) -> interest + ":").reduce(interestsString, String::concat);
+        request.body.put(Constants.COMMUNITY_INTERESTS, interestsString);
+        Request response = mSocketConnection.sendAndGetResponse(request);
+        return response.body.get(Constants.STATE).equals(Constants.SUCCESS);
+    }
+
+    public boolean editCommunity(String name, String method, List<String> interests) {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.EDIT_COMMUNITY;
+        request.body.put(Constants.COMMUNITY_NAME, name);
+        request.body.put(Constants.COMMUNITY_METHOD, method);
+        String interestsString = "";
+        interestsString = interests.stream().map((interest) -> interest + ":").reduce(interestsString, String::concat);
+        request.body.put(Constants.COMMUNITY_INTERESTS, interestsString);
+        Request response = mSocketConnection.sendAndGetResponse(request);
+        return response.body.get(Constants.STATE).equals(Constants.SUCCESS);
+    }
+
+    public String[] getCommunityMembers(String community) {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.GET_COMMUNITY_MEMBERS;
+        request.body.put(Constants.COMMUNITY_NAME, community);
+        final Request response = mSocketConnection.sendAndGetResponse(request);
+        
+        if (response.body.get(Constants.COMMUNITY_MEMBERS) != null) {
+            return response.body.get(Constants.COMMUNITY_MEMBERS).split(";");
+        }
+        return new String[0];
+    }
+
+    public boolean joinTheCommunity(String community, String user) {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.JOIN_THE_COMMUNITY;
+        request.body.put(Constants.COMMUNITY_NAME, community);
+        request.body.put(Constants.WEBNAME, user);
+        Request response = mSocketConnection.sendAndGetResponse(request);
+        return response.body.get(Constants.STATE).equals(Constants.SUCCESS);
+    }
+    
+    public String quitTheCommunity(String community, String user) {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.requestType = Constants.QUIT_THE_COMMUNITY;
+        request.body.put(Constants.COMMUNITY_NAME, community);
+        request.body.put(Constants.WEBNAME, user);
+        Request response = mSocketConnection.sendAndGetResponse(request);
+        return response.body.get(Constants.STATE);
     }
 }

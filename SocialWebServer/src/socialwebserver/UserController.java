@@ -3,6 +3,7 @@ package socialwebserver;
 import java.sql.Timestamp;
 import request.Request;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +64,43 @@ public class UserController  {
                 final Map<String, String> body = request.body;
                 final String name = body.get(Constants.COMMUNITY);
                 getCommunity(name, socketConnection);
+                break;
+            }
+            case Constants.CREATE_COMMUNITY: {
+                final Map<String, String> body = request.body;
+                final String name = body.get(Constants.COMMUNITY_NAME);
+                final String moderator = body.get(Constants.COMMUNITY_MODERATOR);
+                final String method = body.get(Constants.COMMUNITY_METHOD);
+                final List<String> interests = Arrays.asList(body.get(Constants.COMMUNITY_INTERESTS).split(":"));
+                createCommunity(name, moderator, method, interests, socketConnection);
+                break;
+            }
+            case Constants.EDIT_COMMUNITY: {
+                final Map<String, String> body = request.body;
+                final String name = body.get(Constants.COMMUNITY_NAME);
+                final String method = body.get(Constants.COMMUNITY_METHOD);
+                final List<String> interests = Arrays.asList(body.get(Constants.COMMUNITY_INTERESTS).split(":"));
+                editCommunity(name, method, interests, socketConnection);
+                break;
+            }
+            case Constants.GET_COMMUNITY_MEMBERS: {
+                final Map<String, String> body = request.body;
+                final String community = body.get(Constants.COMMUNITY_NAME);
+                getCommunityMembers(community, socketConnection);
+                break;
+            }
+            case Constants.JOIN_THE_COMMUNITY: {
+                final Map<String, String> body = request.body;
+                final String community = body.get(Constants.COMMUNITY_NAME);
+                final String user = body.get(Constants.WEBNAME);
+                joinTheCommunity(community, user, socketConnection);
+                break;
+            }
+            case Constants.QUIT_THE_COMMUNITY: {
+                final Map<String, String> body = request.body;
+                final String community = body.get(Constants.COMMUNITY_NAME);
+                final String user = body.get(Constants.WEBNAME);
+                quitTheCommunity(community, user, socketConnection);
                 break;
             }
             default:
@@ -158,15 +196,48 @@ public class UserController  {
         final Request response = new Request();
         response.senderType = Constants.SERVER;
         response.requestType = Constants.GET_COMMUNITY;
-        response.body.put(Constants.COMMUNITY, String.join(";", mDataAccess.getCommunity(name)));
+        String[] result = mDataAccess.getCommunity(name);
+        response.body.put(Constants.COMMUNITY, String.join(";", result));
         socketConnection.send(response);
     }
 
-    public void createCommunity(String moderator, String communityName, String method, List<String> interests, SocketConnection socketConection) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void createCommunity(String name, String moderator, String method, List<String> interests, SocketConnection socketConnection) {
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.CREATE_COMMUNITY;
+        response.body.put(Constants.STATE, mDataAccess.createCommunity(name, moderator, method, interests) ? Constants.SUCCESS : Constants.FAIL);
+        socketConnection.send(response);
     }
 
-    public void editCommunity(String communityName, String method, List<String> interests, SocketConnection socketConection) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void editCommunity(String name, String method, List<String> interests, SocketConnection socketConnection) {
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.EDIT_COMMUNITY;
+        response.body.put(Constants.STATE, mDataAccess.editCommunity(name, method, interests) ? Constants.SUCCESS : Constants.FAIL);
+        socketConnection.send(response);
+    }
+
+    public void getCommunityMembers(String community, SocketConnection socketConnection) {
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.GET_COMMUNITY_MEMBERS;
+        response.body.put(Constants.COMMUNITY_MEMBERS, String.join(";", mDataAccess.getCommunityMembers(community)));
+        socketConnection.send(response);
+    }
+
+    public void joinTheCommunity(String community, String user, SocketConnection socketConnection) {
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.JOIN_THE_COMMUNITY;
+        response.body.put(Constants.STATE, mDataAccess.joinTheCommunity(community, user) ? Constants.SUCCESS : Constants.FAIL);
+        socketConnection.send(response);
+    }
+
+    public void quitTheCommunity(String community, String user, SocketConnection socketConnection) {
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.QUIT_THE_COMMUNITY;
+        response.body.put(Constants.STATE, mDataAccess.quitTheCommunity(community, user));
+        socketConnection.send(response);
     }
 }
