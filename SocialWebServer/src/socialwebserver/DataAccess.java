@@ -143,10 +143,10 @@ public class DataAccess {
                 final ResultSet resultSet = statement.executeQuery(query);
                 while (resultSet.next()) {
                     final StringBuilder sb = new StringBuilder();
-                    final String from = resultSet.getString(1);
-                    final String to = resultSet.getString(2);
-                    final String message = resultSet.getString(3);
-                    final String timestamp = resultSet.getString(4);
+                    final String from = resultSet.getString(2);
+                    final String to = resultSet.getString(3);
+                    final String message = resultSet.getString(4);
+                    final String timestamp = resultSet.getString(6);
                     sb.append(from).append("<:>").append(to).append("<:>").
                             append(timestamp).append("<:>").append(message);
                     messages.add(sb.toString());
