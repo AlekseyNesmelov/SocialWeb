@@ -101,6 +101,10 @@ public class UserController  {
                 final String community = body.get(Constants.COMMUNITY_NAME);
                 final String user = body.get(Constants.WEBNAME);
                 quitTheCommunity(community, user, socketConnection);
+            case Constants.GET_DIALOGS: {
+                final Map<String, String> body = request.body;
+                final String from = body.get(Constants.FROM);
+                getDialogs(from, socketConnection);
                 break;
             }
             default:
@@ -181,6 +185,20 @@ public class UserController  {
         response.senderType = Constants.SERVER;
         response.requestType = Constants.GET_MESSAGES;
         response.body.put(Constants.MESSAGES, sb.toString());
+        socketConnection.send(response);
+    }
+    
+    public void getDialogs(String firstUser, SocketConnection socketConnection) {
+        final StringBuilder sb = new StringBuilder();
+        final List<String> dialogs = mDataAccess.getDialogs(firstUser);
+        dialogs.stream().forEach((String interest) -> {
+            sb.append(interest).append("<:::>");
+        });
+        
+        final Request response = new Request();
+        response.senderType = Constants.SERVER;
+        response.requestType = Constants.GET_DIALOGS;
+        response.body.put(Constants.DIALOGS, sb.toString());
         socketConnection.send(response);
     }
 

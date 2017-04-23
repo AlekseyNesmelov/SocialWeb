@@ -11,6 +11,7 @@ public class Constants {
     public static final String GET_INTERESTS_TREE = "get interests tree";
     public static final String SEND_MAESSAGE = "send message";
     public static final String GET_MESSAGES = "get messages";
+    public static final String GET_DIALOGS = "get dialogs";
     public static final String GET_COMMUNITIES = "get communities";
     public static final String GET_COMMUNITY = "get community";
     public static final String CREATE_COMMUNITY = "create community";
@@ -48,4 +49,6 @@ public class Constants {
 
     public static final String FREE_METHOD = "Открытое";
     public static final String RESTRICTED_METHOD = "Закрытое";
+
+    public static final String DIALOGS = "dialogs";
 }

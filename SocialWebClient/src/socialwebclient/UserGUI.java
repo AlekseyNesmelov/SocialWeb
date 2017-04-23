@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -20,7 +21,10 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -67,6 +71,10 @@ public class UserGUI {
     private final JTextArea mMessageToArea;
     private final JTextArea mMessageDialog;
     private final JScrollPane mMessageDialogScroll;
+    private final JList mRecentMessageList;
+    private final JLabel mRecentMessageLabel;
+    private final DefaultListModel<String> mRecentMessageModel = new DefaultListModel<>();
+    private final JScrollPane mDialogsScroll;
     
     private final JLabel mInterestsLabel;
     private final JTree mInterestsTree;
@@ -269,6 +277,37 @@ public class UserGUI {
         mMessageToArea.setLineWrap(true);
         mMessagesScreen.add(mMessageToArea);
         
+        mRecentMessageLabel = new JLabel("Диалоги");
+        mRecentMessageLabel.setBounds(450, 100, 120, 20);
+        mMessagesScreen.add(mRecentMessageLabel);
+        
+        mRecentMessageList = new JList(mRecentMessageModel);
+        mDialogsScroll = new JScrollPane (mRecentMessageList, 
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mDialogsScroll.setBounds(450, 130, 120, 190);
+        mMessagesScreen.add(mDialogsScroll);
+        final ListSelectionModel listSelectionModel = mRecentMessageList.getSelectionModel();
+        listSelectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                final ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+                if (!lsm.isSelectionEmpty()) {
+                    int minIndex = lsm.getMinSelectionIndex();
+                    int maxIndex = lsm.getMaxSelectionIndex();
+                    for (int i = minIndex; i <= maxIndex; i++) {
+                        if (lsm.isSelectedIndex(i) && i > -1 && i < mRecentMessageModel.getSize()) {
+                            final String name = mRecentMessageModel.get(i);
+                            mMessageToField.setText(name);
+                            mMessageDialog.setText(mController.getMessages(mUserName, name));
+                            if (mRefreshDialogThread != null) {
+                                mRefreshDialogThread.setSecond(name);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
         mSendMessageButton = new JButton("Отправить");
         mSendMessageButton.setBounds(50, 260, 140, 30);
         mMessagesScreen.add(mSendMessageButton);
@@ -278,9 +317,8 @@ public class UserGUI {
         mMessageDialog.setLineWrap(true);
         
         mMessageDialogScroll = new JScrollPane (mMessageDialog, 
-   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mMessageDialogScroll.setBounds(50, 340, 350, 200);
-        
         mMessagesScreen.add(mMessageDialogScroll);
         
         mShowDialogButton = new JButton("Показать диалог");
@@ -507,7 +545,8 @@ public class UserGUI {
                 if (mRefreshDialogThread != null) {
                     mRefreshDialogThread.breakRefresh();
                 }
-                mRefreshDialogThread = new RefreshDialogThread(mUserName, mMessageDialog, mController);
+                mRefreshDialogThread = new RefreshDialogThread(mUserName, mMessageDialog,
+                        mRecentMessageModel, mController);
                 mRefreshDialogThread.start();
             } else if (e.getSource() == mBackFromMessagesButton) {
                 clear();

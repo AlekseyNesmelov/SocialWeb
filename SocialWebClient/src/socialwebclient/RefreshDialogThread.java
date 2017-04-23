@@ -5,9 +5,11 @@
  */
 package socialwebclient;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JTextArea;
+import javax.swing.ListModel;
 
 class RefreshDialogThread extends Thread{
     private static final long DELAY = 3000;
@@ -18,11 +20,14 @@ class RefreshDialogThread extends Thread{
     private String mSecond = "nobody";
     private Controller mController;
     private JTextArea mTextArea;
+    private DefaultListModel mRecentList;
     
-    public RefreshDialogThread(final String first, final JTextArea textArea, final Controller controller) {
+    public RefreshDialogThread(final String first, final JTextArea textArea, 
+            final DefaultListModel recentList, final Controller controller) {
         mFirst = first;
         mTextArea = textArea;
         mController = controller;
+        mRecentList = recentList;
     }
     
     public void setSecond(final String second) {
@@ -33,6 +38,13 @@ class RefreshDialogThread extends Thread{
     public void run() {
         while (!mIsBroken) {
             mTextArea.setText(mController.getMessages(mFirst, mSecond));
+            
+            final List<String> dialogs = mController.getDialogs(mFirst);
+           
+            mRecentList.clear();
+            dialogs.stream().forEach((dialog) -> {
+                mRecentList.addElement(dialog);
+            });
             try {
                 Thread.sleep(DELAY);
             } catch (InterruptedException ex) {

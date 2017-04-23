@@ -104,6 +104,25 @@ public class Controller {
         return result.toString();
     }
     
+    public List<String> getDialogs(final String from) {
+        final Request request = new Request();
+        request.senderType = Constants.USER;
+        request.body.put(Constants.FROM, from);
+        request.requestType = Constants.GET_DIALOGS;
+        final Request response = mSocketConnection.sendAndGetResponse(request);
+        
+        final List<String> result = new ArrayList<>();
+        if (response.body.get(Constants.DIALOGS) != null) {
+            final String[] dialogs = response.body.get(Constants.DIALOGS).split("<:::>");
+            for (final String dialog : dialogs) {
+                if (!dialog.isEmpty() && !result.contains(dialog)) {
+                    result.add(dialog);
+                }
+            }
+        }
+        return result;
+    }
+    
     public String[] getCommunities() {
         final Request request = new Request();
         request.senderType = Constants.USER;
